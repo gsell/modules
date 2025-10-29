@@ -1965,7 +1965,16 @@ proc runModuleUse {cmd mode pos args} {
             $* {
                lappend pathlist $path
             }
-            default {
+	     default {
+		if {[info exists ::g_modulepathLabel]} {
+		   foreach key [array names ::g_modulepathLabel] {
+		      set v $::g_modulepathLabel($key)
+		      if {[string equal $v $path]} {
+			 set path $key
+			 break
+		      }
+		   }
+		}
                if {$pos eq {remove}} {
                   if {$path in $modpathlist} {
                      lappend pathlist $path
@@ -3148,7 +3157,8 @@ proc cmdModuleSpider {show_oneperline show_mtime show_filter search_filter\
       $search_match $modpath_list {*}$args
 }
 
-# ;;; Local Variables: ***
-# ;;; mode:tcl ***
-# ;;; End: ***
+# Local Variables:
+# mode:tcl
+# tcl-indent-level: 3
+# End:
 # vim:set tabstop=3 shiftwidth=3 expandtab autoindent:
