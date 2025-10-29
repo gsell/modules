@@ -1965,7 +1965,7 @@ proc runModuleUse {cmd mode pos args} {
             $* {
                lappend pathlist $path
             }
-	    default {
+            default {
                if {$pos eq {remove}} {
                   if {$path in $modpathlist} {
                      lappend pathlist $path
