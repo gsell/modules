@@ -1965,16 +1965,7 @@ proc runModuleUse {cmd mode pos args} {
             $* {
                lappend pathlist $path
             }
-	     default {
-		if {[info exists ::g_modulepathLabel]} {
-		   foreach key [array names ::g_modulepathLabel] {
-		      set v $::g_modulepathLabel($key)
-		      if {[string equal $v $path]} {
-			 set path $key
-			 break
-		      }
-		   }
-		}
+	    default {
                if {$pos eq {remove}} {
                   if {$path in $modpathlist} {
                      lappend pathlist $path
