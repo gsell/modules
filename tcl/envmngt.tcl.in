@@ -1816,14 +1816,23 @@ proc add-path {cmd mode dflbhv args} {
    set val [get-env $var]
 
    foreach dir $path_list {
+      # With the following variable, we indicate that $dir has been removed
+      # from the path if path_entry_reorder is true and duplicates are not
+      # allowed.
       set dir_removed 0
       if {[getConf path_entry_reorder]} {
          if {[info exists countarr($dir)] && ! $allow_dup} {
-            # remove dir if in $val and duplicates are not allowed
+            # if $dir is in $val and duplicates are not allowed:
+            # first remove all occurences of $dir in $val
+            # and add $dir at the beginning or end later again
             set mpath_list [split $val $separator]
             set mpath_list [lsearch -inline -all -not -exact $mpath_list $dir]
             set val [join $mpath_list $separator]
+
+            # Set counter to 0. Unfortunatelly we cannot use countarr($dir)
+            # in the following if statement.
             set countarr($dir) 0
+            # make sure $dir is added again
             set dir_removed 1
          }
       }
