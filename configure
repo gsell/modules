@@ -79,7 +79,7 @@ extendeddefault=y
 advversspec=y
 ml=y
 wa277=n
-lmodpath=n
+pathentryreorder=n
 loadedmodules=
 quarantinevars=
 binsearchpath=/usr/bin:/bin:/usr/local/bin
@@ -932,9 +932,9 @@ for arg in "$@"; do
       pythonbin=$(get_package_value "$arg") ;;
    --with-module-path=*)
       echo_warning "Option \`--with-module-path' ignored, use \`--modulepath' instead" ;;
-   --enable-lmod-path|--disable-lmod-path)
+   --enable-path-entry-reorder|--disable-path-entry-reorder)
       # shellcheck disable=SC2034
-      lmodpath=$(get_feature_value "$arg") ;;
+      pathentryreorder=$(get_feature_value "$arg") ;;
    -h|--help)
       echo_usage
       exit 0
