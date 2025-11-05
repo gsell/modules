@@ -1796,7 +1796,7 @@ proc add-path {cmd mode dflbhv args} {
       set bhv $dflbhv
    } else {
       lassign [parsePathCommandArgs $cmd $mode $dflbhv {*}$args] separator\
-         allow_dup idx_val ign_refcount val_set_is_delim glob_match bhv var\
+	 allow_dup idx_val ign_refcount val_set_is_delim glob_match bhv var\
          path_list
    }
 
@@ -1815,33 +1815,29 @@ proc add-path {cmd mode dflbhv args} {
 
    set val [get-env $var]
 
-   if {[getConf lmod_path_rule]} {
-      set mpath_list [split $val $separator]
-      foreach dir $path_list {
-         if {$bhv eq {prepend}} {
-            set mpath_list "$dir [lsearch -inline -all -not -exact\
-                $mpath_list $dir]"
-         } else {
-            set mpath_list "[lsearch -inline -all -not -exact\
-                $mpath_list $dir] $dir"
+   foreach dir $path_list {
+      set dir_removed 0
+      if {[getConf path_entry_reorder]} {
+         if {[info exists countarr($dir)] && ! $allow_dup} {
+            # remove dir if in $val and duplicates are not allowed
+            set mpath_list [split $val $separator]
+            set mpath_list [lsearch -inline -all -not -exact $mpath_list $dir]
+            set val [join $mpath_list $separator]
+            set countarr($dir) 0
+            set dir_removed 1
          }
-         set val [join $mpath_list $separator]
       }
-      set countarr($dir) 1
-   } else {
-      foreach dir $path_list {
-         if {![info exists countarr($dir)] || $allow_dup} {
-            # ignore env var set empty if no empty entry found in reference
-            # counter array (sometimes var is cleared by setting it empty not
-            # unsetting it)
-            if {$val ne {} || [info exists countarr()]} {
-               set sep [expr {$val eq $separator ? {} : $separator}]
-               set val [expr {$bhv eq {prepend} ? "$dir$sep$val" :\
-                                  "$val$sep$dir"}]
+      if {![info exists countarr($dir)] || $dir_removed || $allow_dup} {
+         # ignore env var set empty if no empty entry found in reference
+         # counter array (sometimes var is cleared by setting it empty not
+         # unsetting it)
+         if {$val ne {} || [info exists countarr()]} {
+            set sep [expr {$val eq $separator ? {} : $separator}]
+            set val [expr {$bhv eq {prepend} ? "$dir$sep$val" :\
+               "$val$sep$dir"}]
             } else {
                set val $dir
             }
-         }
       }
       if {[info exists countarr($dir)]} {
          # do not increase counter if bare separator string is added or if
@@ -2069,8 +2065,10 @@ proc getModulesEnvVarGlobList {{loaded_ctx 0}} {
    return $envvar_glob_list
 }
 
-# Local Variables:
-# Mode: tcl-mode
-# tcl-indent-level: 3
-# End:
+# ;;; Local Variables:
+# ;;; Mode: tcl-mode
+# ;;; tcl-indent-level: 3
+# ;;; tcl-continued-indent-level: 3
+# ;;; indent-tabs-mode: nil
+# ;;; End:
 # vim:set tabstop=3 shiftwidth=3 expandtab autoindent:
