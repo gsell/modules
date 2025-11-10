@@ -34,7 +34,7 @@ multilibsupport libdir64 libdir32 versioning silentshdbgsupport \
 setshellstartup quarantinesupport autohandling availindepth implicitdefault \
 extendeddefault moduleshome initconfin pager pageropts verbosity color \
 darkbgcolors lightbgcolors termbg lockedconfigs icase unloadmatchorder \
-searchmatch modulepath loadedmodules quarantinevars wa277 lmodpath advversspec ml \
+searchmatch modulepath loadedmodules quarantinevars wa277 pathentryreorder advversspec ml \
 windowssupport nearlyforbiddendays implicitrequirement tagabbrev \
 tagcolorname mcookieversioncheck availoutput availterseoutput listoutput \
 listterseoutput editor variantshortcut bashcompletiondir fishcompletiondir \
@@ -804,6 +804,9 @@ for arg in "$@"; do
    --enable-mcookie-version-check*|--disable-mcookie-version-check)
       # shellcheck disable=SC2034
       mcookieversioncheck=$(get_feature_value "$arg") ;;
+   --enable-path-entry-reorder*|--disable-path-entry-reorder)
+      # shellcheck disable=SC2034
+      pathentryreorder=$(get_feature_value "$arg") ;;
    --with-bin-search-path=*|--without-bin-search-path)
       binsearchpath=$(get_package_value "$arg") ;;
    --with-moduleshome=*|--without-moduleshome)
@@ -932,9 +935,6 @@ for arg in "$@"; do
       pythonbin=$(get_package_value "$arg") ;;
    --with-module-path=*)
       echo_warning "Option \`--with-module-path' ignored, use \`--modulepath' instead" ;;
-   --enable-path-entry-reorder|--disable-path-entry-reorder)
-      # shellcheck disable=SC2034
-      pathentryreorder=$(get_feature_value "$arg") ;;
    -h|--help)
       echo_usage
       exit 0
