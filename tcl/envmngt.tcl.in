@@ -1796,7 +1796,7 @@ proc add-path {cmd mode dflbhv args} {
       set bhv $dflbhv
    } else {
       lassign [parsePathCommandArgs $cmd $mode $dflbhv {*}$args] separator\
-	 allow_dup idx_val ign_refcount val_set_is_delim glob_match bhv var\
+         allow_dup idx_val ign_refcount val_set_is_delim glob_match bhv var\
          path_list
    }
 
