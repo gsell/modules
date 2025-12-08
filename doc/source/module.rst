@@ -1370,6 +1370,30 @@ Module Sub-Commands
   sub-command when changing this configuration option from its default value.
   See :envvar:`MODULES_PAGER` description for details.
 
+ .. mconfig:: path_entry_reorder
+
+  Change order of entry in a path-like environment variable, when 
+  :mfcmd:`prepend-path`, :mfcmd:`append-path` or :subcmd:`use` target 
+  a path entry that is already defined in the environment variable.
+
+  The default behavior of :mfcmd:`prepend-path`, :mfcmd:`append-path` and
+  :subcmd:`use` is not to update the value if a path-like environment
+  variable, if they target a path entry that is already defined in the
+  environment variable. If this config option is set to 1, an existing
+  path entry is moved to the beginning respective end unless duplicates
+  are allowed. This is the default behavior of Lmod.
+
+  Default value is 0. It can be changed at installation time with
+  :instopt:`--with-path-entry-reorder` option. The
+  :envvar:`MODULES_PATH_ENTRY_REORDER` environment variable is defined by
+  :subcmd:`config` sub-command when changing this configuration option from
+  its default value. See :envvar:`MODULES_PATH_ENTRY_REORDER` description
+  for details.
+
+  .. only:: html
+
+     .. versionadded:: 5.x
+
  .. mconfig:: protected_envvars
 
   Prevents any modification of listed environment variables (colon `:`
@@ -5266,6 +5290,19 @@ ENVIRONMENT
 
     .. versionchanged:: 5.5
        No pager when :file:`modulecmd.tcl` is run for scripting languages
+
+.. envvar:: MODULES_PATH_ENTRY_REORDER
+
+ The default behavior of :mfcmd:`prepend-path`, :mfcmd:`append-path` and
+ :subcmd:`use` is not to update the value if a path-like environment
+ variable, if they target a path entry that is already defined in the
+ environment variable. If this config option is set to 1, an existing
+ path entry is moved to the beginning respective end unless duplicates
+ are allowed. This is the default behavior of Lmod.
+
+ .. only:: html
+
+    .. versionadded:: 5.x
 
 .. envvar:: MODULES_PROTECTED_ENVVARS
 
