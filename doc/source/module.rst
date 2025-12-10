@@ -1376,14 +1376,7 @@ Module Sub-Commands
   :mfcmd:`prepend-path`, :mfcmd:`append-path` or :subcmd:`use` target 
   a path entry that is already defined in the environment variable.
 
-  The default behavior of :mfcmd:`prepend-path`, :mfcmd:`append-path` and
-  :subcmd:`use` is not to update the value if a path-like environment
-  variable, if they target a path entry that is already defined in the
-  environment variable. If this config option is set to 1, an existing
-  path entry is moved to the beginning respective end unless duplicates
-  are allowed. This is the default behavior of Lmod.
-
-  Default value is 0. It can be changed at installation time with
+  Default value is 0. It can be changed at installation time with the
   :instopt:`--with-path-entry-reorder` option. The
   :envvar:`MODULES_PATH_ENTRY_REORDER` environment variable is defined by
   :subcmd:`config` sub-command when changing this configuration option from
@@ -5293,12 +5286,28 @@ ENVIRONMENT
 
 .. envvar:: MODULES_PATH_ENTRY_REORDER
 
- The default behavior of :mfcmd:`prepend-path`, :mfcmd:`append-path` and
- :subcmd:`use` is not to update the value if a path-like environment
- variable, if they target a path entry that is already defined in the
- environment variable. If this config option is set to 1, an existing
- path entry is moved to the beginning respective end unless duplicates
- are allowed. This is the default behavior of Lmod.
+ This environment variable changes the behavior of :mfcmd:`prepend-path`, :mfcmd:`append-path` and :subcmd:`use`.
+ 
+ If set to 1, and one of these commands targets a path entry that already exists in the environment variable, the entry is moved to the beginning or end (depending on the command), unless duplicates are allowed. This is the default behavior in Lmod.
+ If set to 0, the environment variable is not modified when the entry already exists.
+
+ Example:
+
+  .. parsed-literal::
+
+   :ps:`$` module config path_entry_reorder 0
+   :ps:`$` module append-path PATHVAR /foo
+   :ps:`$` module append-path PATHVAR /bar
+   :ps:`$` module append-path PATHVAR /foo
+   :ps:`$` echo $PATHVAR
+   /foo:/bar
+   :ps:`$` module config path_entry_reorder 1
+   :ps:`$` module append-path PATHVAR /foo
+   :ps:`$` echo $PATHVAR
+   /bar:/foo
+   :ps:`$` module append-path --duplicates PATHVAR /bar
+   :ps:`$` echo $PATHVAR
+   /bar:/foo:/bar
 
  .. only:: html
 
