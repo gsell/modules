@@ -395,6 +395,12 @@ else
   setwa277 := 0
 endif
 
+ifeq ($(pathentryreorder),y)
+  setpathentryreorder := 1
+else
+  setpathentryreorder := 0
+endif
+
 ifneq ($(tcllinteropts),)
   tcllintercmd := $(tcllinter) $(tcllinteropts)
 else
@@ -443,7 +449,7 @@ sed -e 's|@prefix@|$(prefix)|g' \
 	-e 's|@sourcecache@|$(setsourcecache)|g' \
 	-e 's|@searchmatch@|$(searchmatch)|g' \
 	-e 's|@wa277@|$(setwa277)|g' \
-	-e 's|@pathentryreorder@|$(pathentryreorder)|g' \
+	-e 's|@pathentryreorder@|$(setpathentryreorder)|g' \
 	-e 's|@icase@|$(icase)|g' \
 	-e 's|@nearlyforbiddendays@|$(nearlyforbiddendays)|g' \
 	-e 's|@tagabbrev@|$(tagabbrev)|g' \
