@@ -153,11 +153,8 @@ if {![info exists env(MREL_FEDORA_USERNAME)]} {
 }
 set fedora_princ $env(MREL_FEDORA_USERNAME)@$fedora_realm
 reportInfo "Fedora principal set to '$fedora_princ'"
-if {[catch {exec klist} klist_out] || ![string match "*Default principal:\
-   $fedora_princ*" $klist_out]} {
-   reportInfo "Running command: kinit $fedora_princ"
-   exec >@stdout kinit $fedora_princ
-}
+reportInfo "Running command: kinit $fedora_princ"
+exec >@stdout kinit $fedora_princ
 reportInfo "Kerberos ticket to $fedora_realm realm acquired"
 
 # get name of GitHub remote repository used to trigger CI
@@ -312,6 +309,9 @@ foreach rpmpkg $rpmpkg_list {
 runcmd >@stdout rpmlint --rpmlintrc share/rpm/environment-modules.rpmlintrc\
    share/rpm/environment-modules.spec $srcrpm {*}$rpmpkg_list
 quitorcont
+
+# test RPM uninstall
+runcmd 2>@$logfid sudo rpm -e --nodeps environment-modules
 
 
 # Phase 4: build, test, install from generated dists

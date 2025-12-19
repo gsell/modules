@@ -6,10 +6,23 @@ Release notes
 This file describes changes in recent versions of Modules. It primarily
 documents those changes that are of interest to users and admins.
 
+.. _5.7 release notes:
+
+Modules 5.7.0 (not yet released)
+--------------------------------
+
+* Script: improve :command:`mrel` to always ask a Fedora Kerberos ticket.
+* Use CMake ``EVAL CODE`` to forward arguments passed to ``module`` CMake
+  function. (fix issue #419 with contribution from Benoit Dumas)
+* Doc: update email address in `Code of conduct`_ to report bad behavior to
+  maintainers.
+* Move *modules-interest* mailing-list to HPSF.
+
+
 .. _5.6 release notes:
 
-Modules 5.6.1 (not yet released)
---------------------------------
+Modules 5.6.1 (2025-11-25)
+--------------------------
 
 * Script: improve :command:`mrel` to better support Koji states and not rely
   on sudo privileges to test a new release.
@@ -30,6 +43,18 @@ Modules 5.6.1 (not yet released)
 * Doc: precise that no automatic path resolution is performed on
   :mfcmd:`prepend-path`, :mfcmd:`append-path` or :mfcmd:`remove-path`
   modulefile commands. (fix issue #597)
+* Doc: add way to build latexpdf documentation.
+* Ensure that a module having the same name than a loaded module from
+  another modulepath does not inherit its tags. (fix issue #599)
+* Drop tags stored in memory that applies to a module when unloading it. It
+  ensures that tags applied to the module when reloaded from a different
+  modulepath are not inherited.
+* Always apply *abort on error* behavior in case a Dependent Reload sticky
+  (and :option:`--force` is not set) or super-sticky module fails to reload.
+  (fix issue #601)
+* When loading a module, check already loaded modules and their aliases
+  exactly matching specification before looking at available modules and their
+  aliases. (fix issue #602)
 
 .. _Furo: https://github.com/pradyunsg/furo
 

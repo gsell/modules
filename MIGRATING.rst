@@ -55,7 +55,7 @@ modulepaths and recursively found in modulepaths enabled by available modules.
     -------------- :sgrdi:`/path/to/modulefiles.3` (via bar/1) --------------
     qux/1  qux/2
 
-The :subcmd:`spider` sub-command relies on the :ref:Extra match search
+The :subcmd:`spider` sub-command relies on the :ref:`Extra match search`
 mechanism to scan modulefiles and identify the modulepaths they enable. Since
 all modulefiles are evaluated during this scan, it is recommended to build
 and use a :ref:`Module cache` to improve search performance.
@@ -295,7 +295,7 @@ for the module.
 
     :ps:`$` module show foo
     -------------------------------------------------------------------
-    :sgrhi:`/path/to/modulefiles/mp4/foo/1`:
+    :sgrhi:`/path/to/modulefiles/foo/1`:
 
     :sgrcm:`provide`         liba/1.2 libb/2.1
     :sgrcm:`conflict`        foo
@@ -717,7 +717,7 @@ module will automatically be unloaded.
     :ps:`$` module purge
     :ps:`$` module load bar/1
     :ps:`$` echo $_LMFILES_
-    /path/to/othermfiles/mp2/bar/1
+    /path/to/othermfiles/bar/1
     :ps:`$` module load foo/1
     Loading :sgrhi:`bar/1`
       :sgrer:`ERROR`: Module already loaded from a different modulepath
@@ -2696,34 +2696,83 @@ attached to.
 Tags inherited from module state, consequence of a module action or set by
 using :mfcmd:`module-tag` but that have a special meaning currently are:
 
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| Tag              | Description             | Set with              | Abbr. | Color                |
-|                  |                         |                       |       |                      |
-+==================+=========================+=======================+=======+======================+
-| auto-loaded      | Module has been loaded  | Inherited             | aL    | .. parsed-literal::  |
-|                  | automatically           |                       |       |     :sgral:`mod/1.0` |
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| forbidden        | Module cannot be loaded | Inherited from        | F     | .. parsed-literal::  |
-|                  |                         | :mfcmd:`module-forbid`|       |     :sgrf:`mod/1.0`  |
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| hidden           | Module is not visible   | Inherited from        | H     | .. parsed-literal::  |
-|                  | on :subcmd:`avail`      | :mfcmd:`module-hide`  |       |     :sgrh:`mod/1.0`  |
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| hidden-loaded    | See `Hiding loaded      | Inherited from        | H     | .. parsed-literal::  |
-|                  | modules`_               | :mfcmd:`module-hide`  |       |     :sgrh:`mod/1.0`  |
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| loaded           | Module is currently     | Inherited             | L     | .. parsed-literal::  |
-|                  | loaded                  |                       |       |     :sgrl:`mod/1.0`  |
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| nearly-forbidden | Module will soon not be | Inherited from        | nL    | .. parsed-literal::  |
-|                  | able to load anymore    | :mfcmd:`module-forbid`|       |     :sgrnf:`mod/1.0` |
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| sticky           | See `Sticky modules`_   | :mfcmd:`module-tag`   | S     | .. parsed-literal::  |
-|                  |                         |                       |       |     :sgrs:`mod/1.0`  |
-+------------------+-------------------------+-----------------------+-------+----------------------+
-| super-sticky     | See `Sticky modules`_   | :mfcmd:`module-tag`   | sS    | .. parsed-literal::  |
-|                  |                         |                       |       |     :sgrss:`mod/1.0` |
-+------------------+-------------------------+-----------------------+-------+----------------------+
+.. only:: html
+
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | Tag              | Description             | Set with               | Abbr. | Color                  |
+    |                  |                         |                        |       |                        |
+    +==================+=========================+========================+=======+========================+
+    | auto-loaded      | Module has been loaded  | Inherited              | aL    | .. parsed-literal::    |
+    |                  | automatically           |                        |       |                        |
+    |                  |                         |                        |       |     :sgral:`mod/1.0`   |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | forbidden        | Module cannot be loaded | Inherited from         | F     | .. parsed-literal::    |
+    |                  |                         | :mfcmd:`module-forbid` |       |                        |
+    |                  |                         |                        |       |     :sgrf:`mod/1.0`    |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | hidden           | Module is not visible   | Inherited from         | H     | .. parsed-literal::    |
+    |                  | on :subcmd:`avail`      | :mfcmd:`module-hide`   |       |                        |
+    |                  |                         |                        |       |     :sgrh:`mod/1.0`    |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | hidden-loaded    | See `Hiding loaded      | Inherited from         | H     | .. parsed-literal::    |
+    |                  | modules`_               | :mfcmd:`module-hide`   |       |                        |
+    |                  |                         |                        |       |     :sgrh:`mod/1.0`    |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | loaded           | Module is currently     | Inherited              | L     | .. parsed-literal::    |
+    |                  | loaded                  |                        |       |                        |
+    |                  |                         |                        |       |     :sgrl:`mod/1.0`    |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | nearly-forbidden | Module will soon not be | Inherited from         | nL    | .. parsed-literal::    |
+    |                  | able to load anymore    | :mfcmd:`module-forbid` |       |                        |
+    |                  |                         |                        |       |     :sgrnf:`mod/1.0`   |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | sticky           | See `Sticky modules`_   | :mfcmd:`module-tag`    | S     | .. parsed-literal::    |
+    |                  |                         |                        |       |                        |
+    |                  |                         |                        |       |     :sgrs:`mod/1.0`    |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+    | super-sticky     | See `Sticky modules`_   | :mfcmd:`module-tag`    | sS    | .. parsed-literal::    |
+    |                  |                         |                        |       |                        |
+    |                  |                         |                        |       |     :sgrss:`mod/1.0`   |
+    +------------------+-------------------------+------------------------+-------+------------------------+
+
+.. only:: not html
+
+    +------------------+-------------------------+------------------------+-------+
+    | Tag              | Description             | Set with               | Abbr. |
+    |                  |                         |                        |       |
+    +==================+=========================+========================+=======+
+    | auto-loaded      | Module has been loaded  | Inherited              | aL    |
+    |                  | automatically           |                        |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
+    | forbidden        | Module cannot be loaded | Inherited from         | F     |
+    |                  |                         | :mfcmd:`module-forbid` |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
+    | hidden           | Module is not visible   | Inherited from         | H     |
+    |                  | on :subcmd:`avail`      | :mfcmd:`module-hide`   |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
+    | hidden-loaded    | See `Hiding loaded      | Inherited from         | H     |
+    |                  | modules`_               | :mfcmd:`module-hide`   |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
+    | loaded           | Module is currently     | Inherited              | L     |
+    |                  | loaded                  |                        |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
+    | nearly-forbidden | Module will soon not be | Inherited from         | nL    |
+    |                  | able to load anymore    | :mfcmd:`module-forbid` |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
+    | sticky           | See `Sticky modules`_   | :mfcmd:`module-tag`    | S     |
+    |                  |                         |                        |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
+    | super-sticky     | See `Sticky modules`_   | :mfcmd:`module-tag`    | sS    |
+    |                  |                         |                        |       |
+    |                  |                         |                        |       |
+    +------------------+-------------------------+------------------------+-------+
 
 Hiding loaded modules
 ^^^^^^^^^^^^^^^^^^^^^

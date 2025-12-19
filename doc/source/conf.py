@@ -46,8 +46,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Modules'
-copyright = '1996-2025, Modules Contributors'
-author = ''
+author = 'Modules Contributors'
+copyright = f'1996-2025, {author}'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -79,7 +79,7 @@ def get_version_release_from_git():
             else:
                 return version, version + '+' + branch + '-' + tags
     else:
-        return '5.6.0', ''
+        return '5.6.1', ''
 
 # The short X.Y version.
 # The full version, including alpha/beta/rc tags.
@@ -196,6 +196,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
+    ('latex_index', 'modules.tex', f'{project} documentation', author, 'manual'),
 ]
 
 
@@ -357,9 +358,9 @@ def ghcommit_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
     title = nodes.reference('', commit_id, refuri=commit_url)
     return [title], []
 
-# define new directive/role that can be used as .. subcmd::/:subcmd:,
-# .. mfcmd::/:mfcmd:, .. mfvar::/:mfvar: and .. sitevar::/:sitevar:
 def setup(app):
+    # define new directive/role that can be used as .. subcmd::/:subcmd:,
+    # .. mfcmd::/:mfcmd:, .. mfvar::/:mfvar: and .. sitevar::/:sitevar:
     app.add_object_type('subcmd', 'subcmd',
                         objname='module sub-command',
                         indextemplate='pair: %s; module sub-command',
@@ -385,3 +386,9 @@ def setup(app):
                         indextemplate='pair: %s; module configuration option')
     app.add_role('ghcommit', ghcommit_role)
 
+    # exclude latex index document on non-latex output builder
+    def on_builder_inited(app):
+        if app.builder.name != 'latex':
+            app.config.exclude_patterns.append('latex_index.rst')
+
+    app.connect('builder-inited', on_builder_inited)

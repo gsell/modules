@@ -571,6 +571,10 @@ proc err_depref {mod} {
     return "$::warn_msgs: Reload of dependent $mod failed"
 }
 
+proc err_stickydepre {mod} {
+    return "$::error_msgs: Reload of sticky dependent $mod failed"
+}
+
 proc err_depreun {mod} {
     return [err_depun $mod]
 }
@@ -898,6 +902,10 @@ proc if_implicitdefault {then {else {}}} {
 
 proc if_availindepth {then {else {}}} {
     return [expr {$::install_availindepth eq {y} ? $then : $else}]
+}
+
+proc if_searchcontains {then {else {}}} {
+    return [expr {$::install_searchmatch eq {contains} ? $then : $else}]
 }
 
 proc if_configlocked {option then {else {}}} {
