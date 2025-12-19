@@ -646,24 +646,38 @@ proc getModuleTagProp {mod fpmod tag prop} {
 
 # Gather all tags applying to a given module
 proc collectModuleTags {mod} {
+   if {[info exists ::g_tagHash($mod)]} {
+      set known_tag_list $::g_tagHash($mod)
+   } else {
+      set known_tag_list {}
+   }
+   set tag_list [getMatchingTagList $mod $known_tag_list]
+   if {[llength $tag_list]} {
+      setModuleTag $mod {*}$tag_list
+   }
+}
+
+proc getMatchingTagList {mod {known_tag_list {}}} {
+   set tag_list {}
    set modroot [getModuleRootFromVersSpec $mod]
    # look if mod matches one of the module specs applying to mod root
    if {[info exists ::g_moduleTagRoot($modroot)]} {
       for {set i 0} {$i < [llength $::g_moduleTagRoot($modroot)]} {incr i} {
          set tag [lindex $::g_moduleTagRoot($modroot) $i]
-         # skip already known tag
-         if {![info exists ::g_tagHash($mod)] || $tag ni $::g_tagHash($mod)} {
+         if {$tag ni $tag_list} {
             foreach {tmodspec tprops} [lindex\
                $::g_moduleTagRootSpec($modroot) $i] {
                # add tag if one modspec matches mod
                if {[modEq $tmodspec $mod eqstart 1 0 1]} {
-                  setModuleTag $mod $tag
+                  lappend known_tag_list $tag
+                  lappend tag_list $tag
                   break
                }
             }
          }
       }
    }
+   return $tag_list
 }
 
 proc setModuleTag {mod args} {
@@ -691,7 +705,7 @@ proc setModuleAndVariantsExtraTag {mod mod_with_vr args} {
 proc unsetModuleTag {mod args} {
    if {[info exists ::g_tagHash($mod)]} {
       lassign [getDiffBetweenList $::g_tagHash($mod) $args] diff_list
-      if {[llength $diff_list]} {
+      if {[llength $args] && [llength $diff_list]} {
          set ::g_tagHash($mod) $diff_list
       } else {
          unset ::g_tagHash($mod)
@@ -709,7 +723,7 @@ proc unsetModuleAndVariantsTag {mod mod_with_vr args} {
 proc unsetModuleExtraTag {mod args} {
    if {[info exists ::g_extraTagHash($mod)]} {
       lassign [getDiffBetweenList $::g_extraTagHash($mod) $args] diff_list
-      if {[llength $diff_list]} {
+      if {[llength $args] && [llength $diff_list]} {
          set ::g_extraTagHash($mod) $diff_list
       } else {
          unset ::g_extraTagHash($mod)
@@ -730,8 +744,16 @@ proc getTagList {mod {fpmod {}} {sort 1}} {
    if {$fpmod ne {} && [info exists ::g_moduleTagFullPath($fpmod)]} {
       appendNoDupToList tag_list {*}$::g_moduleTagFullPath($fpmod)
    }
+   # recompute tags applying from module specification if mod is loaded but
+   # not the same modulefile. tags applying to loaded mod are recorded in
+   # g_tagHash but should not apply to same mod from a different modulepath
+   # do not make this distinction if modulefile is not provided
+   # directly check on g_loadedModules array to avoid triggering env check
+   if {[string length $fpmod] && [info exists ::g_loadedModules($mod)] &&\
+      $fpmod ne [getModulefileFromLoadedModule $mod]} {
+      appendNoDupToList tag_list {*}[getMatchingTagList $mod]
    # get collected tags applied on short designation
-   if {[info exists ::g_tagHash($mod)]} {
+   } elseif {[info exists ::g_tagHash($mod)]} {
       appendNoDupToList tag_list {*}$::g_tagHash($mod)
    }
    if {[llength $tag_list]} {
@@ -1173,10 +1195,11 @@ proc getPathToModule {mod {indir {}} {report_issue 1} {look_loaded no}\
    # or to find a closest match (used when switching with single name arg)
    } elseif {$look_loaded ne {no}} {
       switch -- $look_loaded {
-         match {set getLoadedNameProc getLoadedMatchingName}
+         exact {set getLoadedNameProc getLoadedExactName}
+         match {set getLoadedNameProc getLoadedEqstartName}
          close {set getLoadedNameProc getLoadedWithClosestName}
       }
-      if {[set lm [$getLoadedNameProc $mod]] ne {}} {
+      if {[set lm [$getLoadedNameProc $mod $indir]] ne {}} {
          set vrlist [getVariantList $lm 1]
          set retlist [list [getModulefileFromLoadedModule $lm] $lm]
       } else {
@@ -1414,7 +1437,7 @@ proc unsetLoadedModule {mod modfile} {
 # return the currently loaded module whose name is the closest to the
 # name passed as argument. if no loaded module match at least one part
 # of the passed name, an empty string is returned.
-proc getLoadedWithClosestName {name} {
+proc getLoadedWithClosestName {name modulepath_list} {
    set ret {}
    set retmax 1
 
@@ -1475,12 +1498,20 @@ proc getLoadedWithClosestName {name} {
    return $ret
 }
 
+proc getLoadedExactName {name modulepath_list} {
+   return [getLoadedMatchingName $name {} 0 {} $modulepath_list eqspec]
+}
+
+proc getLoadedEqstartName {name modulepath_list} {
+   return [getLoadedMatchingName $name {} 0 {} $modulepath_list]
+}
+
 # return the currently loaded module whose name is equal or include the name
 # passed as argument. if no loaded module match, an empty string is returned.
 # loading: look at currently loading modules instead of loaded if loading == 1
 # lmlist: only take into account passed loaded module list not all loaded mods
 proc getLoadedMatchingName {name {behavior {}} {loading 0} {lmlist {}}\
-   {modulepath_list {}}} {
+   {modulepath_list {}} {eqtest eqstart}} {
    set ret {}
    set retmax 0
    # get default behavior from unload_match_order config
@@ -1547,7 +1578,7 @@ proc getLoadedMatchingName {name {behavior {}} {loading 0} {lmlist {}}\
          if {![$isLoadedMatchSpecificPath $mod $modulepath_list]} {
             continue
          }
-         if {[modEq $name $matchmod eqstart 1 [expr {$loading ? 1 : 2}] 1]} {
+         if {[modEq $name $matchmod $eqtest 1 [expr {$loading ? 1 : 2}] 1]} {
             switch -- $behavior {
                returnlast {
                   # the last loaded module will be returned
